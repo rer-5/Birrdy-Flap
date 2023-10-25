@@ -191,10 +191,10 @@ while True:
             clock.tick(60)
         pygame.display.update()
         clock.tick(60)
-    size = settings["Bird Size"][0] 
+    bird_size = settings["Bird Size"][0] 
     x = w_canvas/4
     y = (h_canvas-settings["Floor Size"][0])/2
-    bird_rect = pygame.Rect(x-size/2, y-size/2, size, size)
+    bird_rect = pygame.Rect(x-bird_size/2, y-bird_size/2, bird_size, bird_size)
     running = True
     can = True
     grav = 1
