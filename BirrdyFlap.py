@@ -63,7 +63,7 @@ for red in range(1,6):
     for green in range(1,6):
         for blue in range(1,6):
             colours.append((red*50,green*50,blue*50))
-settings = {"Speed":[5,1,25], "Gravity":[100,1,500], "Jump":[7,1,12], "Pipe Size":[75,1,200], "Bird Size":[100,10,200],"Floor Size":[100,10,500]}
+settings = {"Speed":[5,1,25], "Gravity":[100,1,500], "Jump":[7,1,12], "Pipe Size":[75,1,200], "Bird Size":[100,10,200],"Floor Size":[100,10,500],"Fps":[60,10,60]}
 bird_rect = pygame.Rect(0,0,0,0)
 bird_size = 100
 cosmetics = {
@@ -163,13 +163,13 @@ while True:
             text("Reset to Default",w_canvas-200,87.5,50,"white","jungleadventurer")
             if pygame.Rect(w_canvas-350,50,300,100).collidepoint(mousepos):
                 if mouse:
-                    settings = {"Speed":[5,1,25], "Gravity":[100,1,500], "Jump":[7,1,12], "Pipe Size":[75,1,200], "Bird Size":[100,10,200],"Floor Size":[100,10,500]}
+                    settings = {"Speed":[5,1,25], "Gravity":[100,1,500], "Jump":[7,1,12], "Pipe Size":[75,1,200], "Bird Size":[100,10,200],"Floor Size":[100,10,500],"Fps":[60,10,60]}
             if colour_size < 300+150*int(setcount)-h_canvas/5*4:
                 if keys[pygame.K_DOWN] or up_track:
-                    colour_size += 10
+                    colour_size += 50
             if colour_size > 0:
                 if keys[pygame.K_UP] or down_track:
-                    colour_size -= 10
+                    colour_size -= 50
             pygame.display.update()
             clock.tick(60)
         while cosmetic_select:
@@ -253,7 +253,7 @@ while True:
             pipetimer = 0
         bird_rect.clamp_ip(canvas_rect)
         pygame.display.update()
-        clock.tick(60)
+        clock.tick(settings["Fps"][0])
     gamecard = True
     while gamecard:
         window(False)
