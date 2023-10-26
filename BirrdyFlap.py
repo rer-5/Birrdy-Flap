@@ -206,7 +206,8 @@ while True:
     while running:
         window(True)
         cosmetics = {
-    "Body":[2,False,[pygame.draw.rect,(bird_rect)],[pygame.draw.circle,[bird_rect.x+bird_size/2,bird_rect.y+bird_size/2], bird_size/2,True,True,True,True]],
+            #fix circle cosmetics[cosmetic][0] on body
+    "Body":[2,False,[pygame.draw.rect,(bird_rect)],[pygame.draw.circle,[bird_rect.x+bird_size/2,bird_rect.y+bird_size/2], bird_size/2,True,True,True,True],[pygame.draw.polygon,[(bird_rect.right,bird_rect.y),(bird_rect.right,bird_rect.bottom),(bird_rect.x,bird_rect.y+bird_size/2)]]],
     "Beak":[2,False,[pygame.draw.polygon,[(bird_rect.right,bird_rect.top+bird_size/5),(bird_rect.right,bird_rect.top+bird_size/20*9),(bird_rect.right+bird_size*17.5/100,bird_rect.top+bird_size/4)]]],
     "Eye":[2,False,[pygame.draw.circle,[bird_rect.right-bird_size/5,bird_rect.top+bird_size/5], bird_size/20,True,True,True,True]],
     "Wing":[2,False,[pygame.draw.circle,[bird_rect.x+bird_size/10,bird_rect.bottom-bird_size/10*6], int(bird_size/4),False,False,True,True]]
@@ -229,9 +230,9 @@ while True:
         for cosmetic in cosmetics:
             if cosmetics[cosmetic][cosmetics[cosmetic][0]]:
                 if len(cosmetics[cosmetic][cosmetics[cosmetic][0]]) == 7:
-                    cosmetics[cosmetic][cosmetics[cosmetic][0]][0](canvas, colors[cosmetic],cosmetics[cosmetic][2][1],cosmetics[cosmetic][2][2],draw_top_left=cosmetics[cosmetic][2][3],draw_top_right=cosmetics[cosmetic][2][4],draw_bottom_left=cosmetics[cosmetic][2][5],draw_bottom_right=cosmetics[cosmetic][2][6])
+                    cosmetics[cosmetic][cosmetics[cosmetic][0]][0](canvas, colors[cosmetic],cosmetics[cosmetic][cosmetics[cosmetic][0]][1],cosmetics[cosmetic][cosmetics[cosmetic][0]][2],draw_top_left=cosmetics[cosmetic][cosmetics[cosmetic][0]][3],draw_top_right=cosmetics[cosmetic][cosmetics[cosmetic][0]][4],draw_bottom_left=cosmetics[cosmetic][cosmetics[cosmetic][0]][5],draw_bottom_right=cosmetics[cosmetic][cosmetics[cosmetic][0]][6])
                 else:
-                    cosmetics[cosmetic][cosmetics[cosmetic][0]][0](canvas, colors[cosmetic],cosmetics[cosmetic][2][1])
+                    cosmetics[cosmetic][cosmetics[cosmetic][0]][0](canvas, colors[cosmetic],cosmetics[cosmetic][cosmetics[cosmetic][0]][1])
         if keys[pygame.K_SPACE] or mouse:
             if can:
                 grav = 1
