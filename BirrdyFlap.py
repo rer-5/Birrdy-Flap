@@ -70,9 +70,9 @@ def Cosmetics(one,two,three,four):
     global cosmetics
     cosmetics = {
         "Body":[one,False,[pygame.draw.rect,(bird_rect)],[pygame.draw.circle,[bird_rect.x+bird_size/2,bird_rect.y+bird_size/2], bird_size/2,True,True,True,True],[pygame.draw.polygon,[(bird_rect.right,bird_rect.y),(bird_rect.right,bird_rect.bottom),(bird_rect.x,bird_rect.y+bird_size/2)]],[pygame.draw.polygon,[(bird_rect.x,bird_rect.y+bird_size/2),(bird_rect.x+bird_size/5*2,bird_rect.bottom),(bird_rect.right,bird_rect.y+bird_size/5*4),(bird_rect.right,bird_rect.y+bird_size/5),(bird_rect.x+bird_size/5*2,bird_rect.y)]]],
-        "Beak":[two,False,[pygame.draw.polygon,[(bird_rect.right,bird_rect.top+bird_size/5),(bird_rect.right,bird_rect.top+bird_size/20*9),(bird_rect.right+bird_size*17.5/100,bird_rect.top+bird_size/4)]]],
-        "Eye":[three,False,[pygame.draw.circle,[bird_rect.right-bird_size/5,bird_rect.top+bird_size/5], bird_size/20,True,True,True,True],[pygame.draw.rect,(bird_rect.right-bird_size/5-bird_size/20,bird_rect.top+bird_size/5-bird_size/20,bird_size/10,bird_size/10)]],
-        "Wing":[four,False,[pygame.draw.circle,[bird_rect.x+bird_size/10,bird_rect.bottom-bird_size/10*6], int(bird_size/4),False,False,True,True]]
+        "Beak":[two,False,[pygame.draw.polygon,[(bird_rect.right,bird_rect.top+bird_size/5),(bird_rect.right,bird_rect.top+bird_size/20*9),(bird_rect.right+bird_size*17.5/100,bird_rect.top+bird_size/4)]],[pygame.draw.circle,[bird_rect.right,bird_rect.y+bird_size/3],bird_size/10,False,True,False,False]],
+        "Eye":[three,False,[pygame.draw.circle,[bird_rect.right-bird_size/5,bird_rect.top+bird_size/5],bird_size/20,True,True,True,True],[pygame.draw.rect,(bird_rect.right-bird_size/5-bird_size/20,bird_rect.top+bird_size/5-bird_size/20,bird_size/10,bird_size/10)]],
+        "Wing":[four,False,[pygame.draw.circle,[bird_rect.x+bird_size/10,bird_rect.bottom-bird_size/10*6],bird_size/4,False,False,True,True],[pygame.draw.polygon,[(bird_rect.x-bird_size/5,bird_rect.y+bird_size/5*2),(bird_rect.x+bird_size/5*2,bird_rect.y+bird_size/5*2),(bird_rect.x+bird_size/10,bird_rect.y+bird_size/4*3)]],[pygame.draw.rect,(bird_rect.x-bird_size/2.5+bird_size/10,bird_rect.y+bird_size/2.5,bird_size/1.25,bird_size/2.5)]]
         }
 Cosmetics(2,2,2,2)
 bestscore = 0
