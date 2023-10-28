@@ -204,7 +204,7 @@ while True:
                     count += 1
                 if setcount%4:
                     setcount = setcount - setcount%4 + 4
-            if colour_size < 300+150*int(setcount)-h_canvas/5*4:
+            if colour_size < 300+150*int(setcount/4)-h_canvas/5*4:
                 if keys[pygame.K_DOWN]:
                     colour_size += 10
                 if keys[pygame.K_RIGHT] or up_track:
