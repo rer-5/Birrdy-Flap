@@ -66,12 +66,15 @@ for red in range(1,6):
 settings = {"Speed":[5,1,25], "Gravity":[100,1,500], "Jump":[7,1,12], "Pipe Size":[75,1,200], "Bird Size":[100,10,200],"Floor Size":[100,10,500],"Fps":[60,10,60]}
 bird_rect = pygame.Rect(0,0,0,0)
 bird_size = 100
-cosmetics = {
-    "Body":[2,False,[pygame.draw.rect,(bird_rect)],[pygame.draw.circle,[bird_rect.x+bird_size/2,bird_rect.y+bird_size/2], bird_size/2,True,True,True,True],[pygame.draw.polygon,[(bird_rect.right,bird_rect.y),(bird_rect.right,bird_rect.bottom),(bird_rect.x,bird_rect.y+bird_size/2)]]],
-    "Beak":[2,False,[pygame.draw.polygon,[(bird_rect.right,bird_rect.top+bird_size/5),(bird_rect.right,bird_rect.top+bird_size/20*9),(bird_rect.right+bird_size*17.5/100,bird_rect.top+bird_size/4)]]],
-    "Eye":[2,False,[pygame.draw.circle,[bird_rect.right-bird_size/5,bird_rect.top+bird_size/5], bird_size/20,True,True,True,True]],
-    "Wing":[2,False,[pygame.draw.circle,[bird_rect.x+bird_size/10,bird_rect.bottom-bird_size/10*6], int(bird_size/4),False,False,True,True]]
-    }
+def Cosmetics(one,two,three,four):
+    global cosmetics
+    cosmetics = {
+        "Body":[one,False,[pygame.draw.rect,(bird_rect)],[pygame.draw.circle,[bird_rect.x+bird_size/2,bird_rect.y+bird_size/2], bird_size/2,True,True,True,True],[pygame.draw.polygon,[(bird_rect.right,bird_rect.y),(bird_rect.right,bird_rect.bottom),(bird_rect.x,bird_rect.y+bird_size/2)]]],
+        "Beak":[two,False,[pygame.draw.polygon,[(bird_rect.right,bird_rect.top+bird_size/5),(bird_rect.right,bird_rect.top+bird_size/20*9),(bird_rect.right+bird_size*17.5/100,bird_rect.top+bird_size/4)]]],
+        "Eye":[three,False,[pygame.draw.circle,[bird_rect.right-bird_size/5,bird_rect.top+bird_size/5], bird_size/20,True,True,True,True],[pygame.draw.rect,(bird_rect.right-bird_size/5-bird_size/20,bird_rect.top+bird_size/5-bird_size/20,bird_size/10,bird_size/10)]],
+        "Wing":[four,False,[pygame.draw.circle,[bird_rect.x+bird_size/10,bird_rect.bottom-bird_size/10*6], int(bird_size/4),False,False,True,True]]
+        }
+Cosmetics(2,2,2,2)
 bestscore = 0
 while True:
     while openui:
@@ -181,28 +184,26 @@ while True:
                 count = 0
                 for cos in cosmetics[cosmetic]:
                     bird_rect = pygame.Rect(w_canvas/5*((setcount%4)+1)-50,250+150*int(setcount/4)-(colour_size),100,100)
-                    cosmetics = {
-                    "Body":[cosmetics[cosmetic][0],False,[pygame.draw.rect,(bird_rect)],[pygame.draw.circle,[bird_rect.x+bird_size/2,bird_rect.y+bird_size/2], bird_size/2,True,True,True,True],[pygame.draw.polygon,[(bird_rect.right,bird_rect.y),(bird_rect.right,bird_rect.bottom),(bird_rect.x,bird_rect.y+bird_size/2)]]],
-                    "Beak":[cosmetics[cosmetic][0],False,[pygame.draw.polygon,[(bird_rect.right,bird_rect.top+bird_size/5),(bird_rect.right,bird_rect.top+bird_size/20*9),(bird_rect.right+bird_size*17.5/100,bird_rect.top+bird_size/4)]]],
-                    "Eye":[cosmetics[cosmetic][0],False,[pygame.draw.circle,[bird_rect.right-bird_size/5,bird_rect.top+bird_size/5], bird_size/20,True,True,True,True]],
-                    "Wing":[cosmetics[cosmetic][0],False,[pygame.draw.circle,[bird_rect.x+bird_size/10,bird_rect.bottom-bird_size/10*6], int(bird_size/4),False,False,True,True]]
-                    }
+                    Cosmetics(cosmetics["Body"][0],cosmetics["Beak"][0],cosmetics["Eye"][0],cosmetics["Wing"][0])
                     if count:
                         if count == 1:
                             pygame.draw.circle(canvas, "red", (bird_rect.x+50,bird_rect.y+50), 50, width=5)
                             pygame.draw.line(canvas, "red", bird_rect.topleft, bird_rect.bottomright, width=5)
                             count += 1
                         else:
-                            if len(cosmetics[cosmetic][cosmetics[cosmetic][0]]) == 7:
-                                cosmetics[cosmetic][cosmetics[cosmetic][0]][0](canvas, colors[cosmetic],cosmetics[cosmetic][cosmetics[cosmetic][0]][1],cosmetics[cosmetic][cosmetics[cosmetic][0]][2],draw_top_left=cosmetics[cosmetic][cosmetics[cosmetic][0]][3],draw_top_right=cosmetics[cosmetic][cosmetics[cosmetic][0]][4],draw_bottom_left=cosmetics[cosmetic][cosmetics[cosmetic][0]][5],draw_bottom_right=cosmetics[cosmetic][cosmetics[cosmetic][0]][6])
+                            if len(cosmetics[cosmetic][count-1]) == 7:
+                                cosmetics[cosmetic][count-1][0](canvas,colors[cosmetic],cosmetics[cosmetic][count-1][1],cosmetics[cosmetic][count-1][2],draw_top_left=cosmetics[cosmetic][count-1][3],draw_top_right=cosmetics[cosmetic][count-1][4],draw_bottom_left=cosmetics[cosmetic][count-1][5],draw_bottom_right=cosmetics[cosmetic][count-1][6])
                             else:
-                                cosmetics[cosmetic][cosmetics[cosmetic][0]][0](canvas, colors[cosmetic],cosmetics[cosmetic][cosmetics[cosmetic][0]][1])
+                                cosmetics[cosmetic][count-1][0](canvas,colors[cosmetic],cosmetics[cosmetic][count-1][1])
                         setcount += 1
-                    else:
-                        count += 1
-                    
+                        if cosmetics[cosmetic][0] == count - 1:
+                            pygame.draw.rect(canvas, "green", bird_rect, width=5)
+                        if mouse:
+                            if bird_rect.collidepoint(mousepos):
+                                cosmetics[cosmetic][0] = count - 1
+                    count += 1
                 if setcount%4:
-                    setcount = int(setcount) - setcount%4 + 4
+                    setcount = setcount - setcount%4 + 4
             if colour_size < 300+150*int(setcount)-h_canvas/5*4:
                 if keys[pygame.K_DOWN]:
                     colour_size += 10
@@ -233,12 +234,7 @@ while True:
     pipes = []
     while running:
         window(True)
-        cosmetics = {
-    "Body":[2,False,[pygame.draw.rect,(bird_rect)],[pygame.draw.circle,[bird_rect.x+bird_size/2,bird_rect.y+bird_size/2], bird_size/2,True,True,True,True],[pygame.draw.polygon,[(bird_rect.right,bird_rect.y),(bird_rect.right,bird_rect.bottom),(bird_rect.x,bird_rect.y+bird_size/2)]]],
-    "Beak":[2,False,[pygame.draw.polygon,[(bird_rect.right,bird_rect.top+bird_size/5),(bird_rect.right,bird_rect.top+bird_size/20*9),(bird_rect.right+bird_size*17.5/100,bird_rect.top+bird_size/4)]]],
-    "Eye":[2,False,[pygame.draw.circle,[bird_rect.right-bird_size/5,bird_rect.top+bird_size/5], bird_size/20,True,True,True,True]],
-    "Wing":[2,False,[pygame.draw.circle,[bird_rect.x+bird_size/10,bird_rect.bottom-bird_size/10*6], int(bird_size/4),False,False,True,True]]
-    }
+        Cosmetics(cosmetics["Body"][0],cosmetics["Beak"][0],cosmetics["Eye"][0],cosmetics["Wing"][0])
         pygame.draw.rect(canvas, colors["Grass"], grass)
         for pipe in pipes:
             pygame.draw.rect(canvas, colors["Pipe"], pipe.rect)
