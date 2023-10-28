@@ -52,12 +52,17 @@ class Pipe():
     def __init__(self, h, y):
         self.rect = pygame.Rect(w_canvas, y, settings["Pipe Size"][0], h)
         self.cna = True
+class Coin():
+    def __init__(self,worth,ccolour,y):
+        self.rect = pygame.Rect(w_canvas,y,settings["Pipe Size"][0],settings["Pipe Size"][0])
+        self.worth = worth
+        self.ccolour = ccolour
 openui = True
 colour_select = False
 settings_select = False
 cosmetic_select = False
 colours = ["black","grey","white","brown","red","yellow","blue","orange","green","purple","blueviolet","magenta","pink","light green","dark green","dark blue","cornflowerblue","cyan", "dark cyan","aquamarine","coral","crimson","deepskyblue"]
-colors = {"Body":colours[randint(0,len(colours)-2)],"Beak":"orange","Eye":"black","Wing":"black","Text":"black","Pipe":"green","Sky":"deepskyblue","Grass":"lightgreen","End":"brown"}
+colors = {"Body":colours[randint(0,len(colours)-2)],"Beak":"orange","Eye":"black","Wing":"black","Text":"black","Pipe":"green","Sky":"deepskyblue","Grass":"lightgreen","End":"brown","Coin":"yellow"}
 colour = "Body"
 for red in range(1,6):
     for green in range(1,6):
@@ -69,13 +74,14 @@ bird_size = 100
 def Cosmetics(one,two,three,four):
     global cosmetics
     cosmetics = {
-        "Body":[one,False,[pygame.draw.rect,(bird_rect)],[pygame.draw.circle,[bird_rect.x+bird_size/2,bird_rect.y+bird_size/2], bird_size/2,True,True,True,True],[pygame.draw.polygon,[(bird_rect.right,bird_rect.y),(bird_rect.right,bird_rect.bottom),(bird_rect.x,bird_rect.y+bird_size/2)]],[pygame.draw.polygon,[(bird_rect.x,bird_rect.y+bird_size/2),(bird_rect.x+bird_size/5*2,bird_rect.bottom),(bird_rect.right,bird_rect.y+bird_size/5*4),(bird_rect.right,bird_rect.y+bird_size/5),(bird_rect.x+bird_size/5*2,bird_rect.y)]]],
+        "Body":[one,False,[pygame.draw.rect,(bird_rect)],[pygame.draw.circle,[bird_rect.x+bird_size/2,bird_rect.y+bird_size/2], bird_size/2,True,True,True,True],[pygame.draw.polygon,[(bird_rect.right,bird_rect.y),(bird_rect.right,bird_rect.bottom),(bird_rect.x,bird_rect.y+bird_size/2)]],[pygame.draw.polygon,[(bird_rect.x,bird_rect.y+bird_size/2),(bird_rect.x+bird_size/5*2,bird_rect.bottom),(bird_rect.right,bird_rect.y+bird_size/5*4),(bird_rect.right,bird_rect.y+bird_size/5),(bird_rect.x+bird_size/5*2,bird_rect.y)]],[pygame.draw.polygon,[(bird_rect.x,bird_rect.y+bird_size/3*2),(bird_rect.x,bird_rect.y+bird_size/3),(bird_rect.x+bird_size/3,bird_rect.y),(bird_rect.x+bird_size/3*2,bird_rect.y),(bird_rect.right,bird_rect.y+bird_size/3),(bird_rect.right,bird_rect.y+bird_size/3*2),(bird_rect.x+bird_size/3*2,bird_rect.bottom),(bird_rect.x+bird_size/3,bird_rect.bottom)]]],
         "Beak":[two,False,[pygame.draw.polygon,[(bird_rect.right,bird_rect.top+bird_size/5),(bird_rect.right,bird_rect.top+bird_size/20*9),(bird_rect.right+bird_size*17.5/100,bird_rect.top+bird_size/4)]],[pygame.draw.circle,[bird_rect.right,bird_rect.y+bird_size/3],bird_size/10,False,True,False,False]],
         "Eye":[three,False,[pygame.draw.circle,[bird_rect.right-bird_size/5,bird_rect.top+bird_size/5],bird_size/20,True,True,True,True],[pygame.draw.rect,(bird_rect.right-bird_size/5-bird_size/20,bird_rect.top+bird_size/5-bird_size/20,bird_size/10,bird_size/10)]],
         "Wing":[four,False,[pygame.draw.circle,[bird_rect.x+bird_size/10,bird_rect.bottom-bird_size/10*6],bird_size/4,False,False,True,True],[pygame.draw.polygon,[(bird_rect.x-bird_size/5,bird_rect.y+bird_size/5*2),(bird_rect.x+bird_size/5*2,bird_rect.y+bird_size/5*2),(bird_rect.x+bird_size/10,bird_rect.y+bird_size/4*3)]],[pygame.draw.rect,(bird_rect.x-bird_size/2.5+bird_size/10,bird_rect.y+bird_size/2.5,bird_size/1.25,bird_size/2.5)]]
         }
 Cosmetics(2,2,2,2)
 bestscore = 0
+playercoin = 0
 while True:
     while openui:
         window(True)
@@ -232,6 +238,7 @@ while True:
     grass = pygame.Rect(0, h_canvas-settings["Floor Size"][0], w_canvas, settings["Floor Size"][0])
     pipetimer = 0
     pipes = []
+    coins = []
     while running:
         window(True)
         Cosmetics(cosmetics["Body"][0],cosmetics["Beak"][0],cosmetics["Eye"][0],cosmetics["Wing"][0])
@@ -247,6 +254,14 @@ while True:
                     pipe.cna = False
             if pygame.Rect.colliderect(pipe.rect, bird_rect):
                 running = False 
+        for coin in coins:
+            pygame.draw.ellipse(canvas, coin.ccolour, coin.rect)
+            coin.rect.x -= settings["Speed"][0]
+            if coin.rect.right < 0:
+                coins.remove(coin)
+            if pygame.Rect.colliderect(coin.rect, bird_rect):
+                playercoin += 1
+                coins.remove(coin)
         if pygame.Rect.colliderect(grass, bird_rect):
             running = False 
         text(str(int(score)), w_canvas/2, 50, 200, colors["Text"], "jungleadventurer")
@@ -275,18 +290,22 @@ while True:
             pipes.append(Pipe(r1, 0))
             pipes.append(Pipe(h_canvas-settings["Floor Size"][0]-r1-r2, r1+r2))
             pipetimer = 0
+            r3 = randint(0,1)
+            if not r3:
+                coins.append(Coin(1,colors["Coin"],r1+r2/2-settings["Pipe Size"][0]/2))
         bird_rect.clamp_ip(canvas_rect)
         pygame.display.update()
         clock.tick(settings["Fps"][0])
     gamecard = True
     while gamecard:
         window(False)
-        pygame.draw.rect(canvas, colors["End"], (w_canvas/2 -250, h_canvas/2 -250, 500, 500))
+        pygame.draw.rect(canvas, colors["End"], (w_canvas/2 -250, h_canvas/2 -250, 500, 600))
         if score > bestscore:
             bestscore = score
         text(f"Your Score: {int(score)}", w_canvas/2, h_canvas/2 -225, 100, colors["Text"], "jungleadventurer")
         text(f"Best Score: {int(bestscore)}", w_canvas/2, h_canvas/2 -150, 100, colors["Text"], "jungleadventurer")
         text("Play again?", w_canvas/2, h_canvas/2 -75, 50, colors["Text"], "jungleadventurer")
+        text(f"Your Coins: {int(playercoin)}", w_canvas/2, h_canvas/2 +250, 100, colors["Text"], "jungleadventurer")
         play_rect = pygame.Rect(w_canvas/2 -125, h_canvas/2 - 25, 250, 250)
         pygame.draw.polygon(canvas, "black",[(w_canvas/2 + 100,h_canvas/2 + 100),(w_canvas/2 - 100, h_canvas/2),(w_canvas/2 - 100, h_canvas/2 + 200)])
         pygame.draw.rect(canvas, "black", play_rect, width=5)
