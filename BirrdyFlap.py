@@ -330,7 +330,7 @@ while True:
     wsf()
     while gamecard:
         window(False)
-        pygame.draw.rect(canvas, colors["End"], (w_canvas/2 -250, h_canvas/2 -250, 500, 600))
+        pygame.draw.rect(canvas, colors["End"], (w_canvas/2 -300, h_canvas/2 -250, 600, 600))
         text(f"Your Score: {int(score)}", w_canvas/2, h_canvas/2 -225, 100, colors["Text"], "jungleadventurer")
         text(f"Best Score: {int(bestscore)}", w_canvas/2, h_canvas/2 -150, 100, colors["Text"], "jungleadventurer")
         text("Play again?", w_canvas/2, h_canvas/2 -75, 50, colors["Text"], "jungleadventurer")
