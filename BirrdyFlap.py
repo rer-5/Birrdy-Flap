@@ -85,15 +85,19 @@ def Cosmetics(one,two,three,four):
         "Wing":[four,False,[pygame.draw.circle,[bird_rect.x+bird_size/10,bird_rect.bottom-bird_size/10*6],bird_size/4,False,False,True,True],[pygame.draw.polygon,[(bird_rect.x-bird_size/5,bird_rect.y+bird_size/5*2),(bird_rect.x+bird_size/5*2,bird_rect.y+bird_size/5*2),(bird_rect.x+bird_size/10,bird_rect.y+bird_size/4*3)]],[pygame.draw.rect,(bird_rect.x-bird_size/2.5+bird_size/10,bird_rect.y+bird_size/2.5,bird_size/1.25,bird_size/2.5)]]
         }
 Cosmetics(2,2,2,2)
-try:
-    with open('BirrdyFlap_savefile.py', 'r'):
-        pass
-except FileNotFoundError:
+importing = True
+while importing:
+    try:
+        import BirrdyFlap_savefile as bf
+        importing = False
+    except ModuleNotFoundError:
+        with open('BirrdyFlap_savefile.py', 'w') as sf:
+            sf.write(f'bestscore = 0\nplayercoin = 0')
+def wsf():
     with open('BirrdyFlap_savefile.py', 'w') as sf:
-        sf.write(f'0\n0')
-with open('BirrdyFlap_savefile.py', 'r') as sf:
-    bestscore = int(sf.readline())
-    playercoin = int(sf.readline())
+        sf.write(f'bestscore = {int(bestscore)}\nplayercoin = {playercoin}')
+bestscore = int(bf.bestscore)
+playercoin = int(bf.playercoin)
 while True:
     while openui:
         window(True)
@@ -243,6 +247,7 @@ while True:
     y = (h_canvas-settings["Floor Size"][0])/2
     bird_rect = pygame.Rect(x-bird_size/2, y-bird_size/2, bird_size, bird_size)
     running = True
+    pausing = False
     can = True
     grav = 1
     jt = settings["Jump"][0]
@@ -305,14 +310,24 @@ while True:
             r3 = randint(0,1)
             if not r3:
                 coins.append(Coin(1,colors["Coin"],r1+r2/2-settings["Pipe Size"][0]/2))
+        if pygame.mouse.get_pressed()[2]:
+            pausing = True
+        while pausing:
+            window(False)
+            pausing = back_button()
+            if mouse or keys[pygame.K_SPACE]:
+                pausing = False
+            pygame.draw.rect(canvas, "black", (w_canvas/3+50,h_canvas/2-300,100,600))
+            pygame.draw.rect(canvas, "black", (w_canvas/3*2-150,h_canvas/2-300,100,600))
+            pygame.display.update()
+            clock.tick(60)
         bird_rect.clamp_ip(canvas_rect)
         pygame.display.update()
         clock.tick(settings["Fps"][0])
     gamecard = True
     if score > bestscore:
         bestscore = score
-    with open('BirrdyFlap_savefile.py', 'w') as sf:
-        sf.write(f'{int(bestscore)}\n{playercoin}')
+    wsf()
     while gamecard:
         window(False)
         pygame.draw.rect(canvas, colors["End"], (w_canvas/2 -250, h_canvas/2 -250, 500, 600))
