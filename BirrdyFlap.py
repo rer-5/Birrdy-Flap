@@ -85,8 +85,15 @@ def Cosmetics(one,two,three,four):
         "Wing":[four,False,[pygame.draw.circle,[bird_rect.x+bird_size/10,bird_rect.bottom-bird_size/10*6],bird_size/4,False,False,True,True],[pygame.draw.polygon,[(bird_rect.x-bird_size/5,bird_rect.y+bird_size/5*2),(bird_rect.x+bird_size/5*2,bird_rect.y+bird_size/5*2),(bird_rect.x+bird_size/10,bird_rect.y+bird_size/4*3)]],[pygame.draw.rect,(bird_rect.x-bird_size/2.5+bird_size/10,bird_rect.y+bird_size/2.5,bird_size/1.25,bird_size/2.5)]]
         }
 Cosmetics(2,2,2,2)
-bestscore = 0
-playercoin = 0
+try:
+    with open('BirrdyFlap_savefile.py', 'r'):
+        pass
+except FileNotFoundError:
+    with open('BirrdyFlap_savefile.py', 'w') as sf:
+        sf.write(f'0\n0')
+with open('BirrdyFlap_savefile.py', 'r') as sf:
+    bestscore = int(sf.readline())
+    playercoin = int(sf.readline())
 while True:
     while openui:
         window(True)
@@ -302,11 +309,13 @@ while True:
         pygame.display.update()
         clock.tick(settings["Fps"][0])
     gamecard = True
+    if score > bestscore:
+        bestscore = score
+    with open('BirrdyFlap_savefile.py', 'w') as sf:
+        sf.write(f'{int(bestscore)}\n{playercoin}')
     while gamecard:
         window(False)
         pygame.draw.rect(canvas, colors["End"], (w_canvas/2 -250, h_canvas/2 -250, 500, 600))
-        if score > bestscore:
-            bestscore = score
         text(f"Your Score: {int(score)}", w_canvas/2, h_canvas/2 -225, 100, colors["Text"], "jungleadventurer")
         text(f"Best Score: {int(bestscore)}", w_canvas/2, h_canvas/2 -150, 100, colors["Text"], "jungleadventurer")
         text("Play again?", w_canvas/2, h_canvas/2 -75, 50, colors["Text"], "jungleadventurer")
