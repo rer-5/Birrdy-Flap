@@ -41,6 +41,11 @@ def back_button():
             return True
     else:
         return True
+def lock(rect):
+    rect = pygame.Rect(rect.right-30, rect.bottom-30, 20, 20)
+    pygame.draw.rect(canvas, "gold", rect)
+    pygame.draw.circle(canvas, "gold", [rect.centerx,rect.y], 10, width=3, draw_top_left=True, draw_top_right=True)
+    pygame.draw.circle(canvas, "black", rect.center, 3)
 def setset(min,max):
     sum = max - min
     if mouse and pygame.Rect(w_canvas/2 -300, 300+150*setcount-colour_size, 600, 100).collidepoint(mousepos):
