@@ -80,6 +80,7 @@ openui = True
 colour_select = False
 settings_select = False
 cosmetic_select = False
+upgrade_select = False
 colours = ["black","grey","white","brown","red","yellow","blue","orange","green","purple","blueviolet","magenta","pink","light green","dark green","dark blue","cornflowerblue","cyan", "dark cyan","aquamarine","coral","crimson","deepskyblue"]
 colors = {"Body":colours[randint(0,len(colours)-2)],"Beak":"orange","Eye":"black","Wing":"black","Text":"black","Pipe":"green","Sky":"deepskyblue","Grass":"lightgreen","End":"brown","Coin":"yellow","Power":"cyan"}
 colour = "Body"
@@ -127,10 +128,13 @@ while True:
         pygame.draw.rect(canvas, colors["Beak"], cosmetic_rect)
         pygame.draw.circle(canvas, "black", (cosmetic_rect.x+50,cosmetic_rect.y+25),20)
         pygame.draw.rect(canvas,"black",(cosmetic_rect.x+25,cosmetic_rect.bottom-50,50,50))
-        settings_rect = pygame.Rect(w_canvas/4*3 -50, h_canvas/2 -50, 100, 100)
+        settings_rect = pygame.Rect(w_canvas/4*3 -50, h_canvas/2 -125, 100, 100)
         pygame.draw.rect(canvas, "gray", settings_rect)
         pygame.draw.ellipse(canvas, "black", settings_rect, width=5) 
         pygame.draw.circle(canvas, "black", (settings_rect.right-50, settings_rect.bottom-50), 25, width=5)
+        upgrade_rect = pygame.Rect(w_canvas/4*3 -50, h_canvas/2 +25, 100, 100)
+        pygame.draw.rect(canvas, colors["Power"], upgrade_rect)
+        pygame.draw.polygon(canvas, "black", [(upgrade_rect.x+35,upgrade_rect.bottom),(upgrade_rect.right-35,upgrade_rect.bottom),(upgrade_rect.right-35,upgrade_rect.y+50),(upgrade_rect.right-15,upgrade_rect.y+50),(upgrade_rect.centerx,upgrade_rect.y+5),(upgrade_rect.x+15,upgrade_rect.y+50),(upgrade_rect.x+35,upgrade_rect.y+50)])
         if mouse:
             if play_rect.collidepoint(mousepos):
                 openui = False
@@ -144,6 +148,9 @@ while True:
                 cosmetic_select = True
                 colour_size = 0
                 bird_size = 100
+            if upgrade_rect.collidepoint(mousepos):
+                upgrade_select = True
+                colour_size = 0
         if keys[pygame.K_SPACE]:
             openui = False
         while colour_select:
@@ -252,6 +259,13 @@ while True:
                     colour_size -= 100
             text("Cosmetic Select", w_canvas/2, 50, 200, colors["Text"], "jungleadventurer")
             cosmetic_select = back_button()
+            pygame.display.update()
+            clock.tick(60)
+        while upgrade_select:
+            window(colors["Sky"])
+
+            text("Upgrades", w_canvas/2, 50, 200, colors["Text"], "jungleadventurer")
+            upgrade_select = back_button()
             pygame.display.update()
             clock.tick(60)
         pygame.display.update()
@@ -365,10 +379,10 @@ while True:
             pipes.append(Pipe(r1, 0))
             pipes.append(Pipe(h_canvas-settings["Floor Size"][0]-r1-r2, r1+r2))
             pipetimer = 0
-            r3 = 2
+            r3 = randint(0,4)
             if not r3:
                 coins.append(Coin(1,colors["Coin"],r1+r2/2-settings["Pipe Size"][0]/2))
-            elif r3 == 2:
+            elif r3 == 1:
                 r3 = randint(0,1)
                 if r3 == 0:
                     powers.append(Power("Shield"))
