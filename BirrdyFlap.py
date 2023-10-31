@@ -73,6 +73,9 @@ class Power():
             pygame.draw.rect(canvas, colors["Power"], self.rect, width=5)
             pygame.draw.rect(canvas, colors["Power"], (self.rect.x+27.5/75*settings["Pipe Size"][0],self.rect.bottom-45/75*settings["Pipe Size"][0],20/75*settings["Pipe Size"][0],30/75*settings["Pipe Size"][0]))
             pygame.draw.circle(canvas, colors["Power"], [self.rect.centerx,self.rect.bottom-45/75*settings["Pipe Size"][0]], (20/75*settings["Pipe Size"][0])/2)
+class Laser():
+    def __init__(self,x,y):
+        self.rect = pygame.Rect(x,y,20/100*settings["Bird Size"][0],7.5/100*settings["Bird Size"][0])
 openui = True
 colour_select = False
 settings_select = False
@@ -268,6 +271,7 @@ while True:
     pipes = []
     coins = []
     powers = []
+    lasers = []
     shield = 0
     ammo = 0
     while running:
@@ -275,8 +279,8 @@ while True:
         Cosmetics(cosmetics["Body"][0],cosmetics["Beak"][0],cosmetics["Eye"][0],cosmetics["Wing"][0])
         pygame.draw.rect(canvas, colors["Grass"], grass)
         for pipe in pipes:
-            pygame.draw.rect(canvas, colors["Pipe"], pipe.rect)
             pipe.rect.x -= settings["Speed"][0]
+            pygame.draw.rect(canvas, colors["Pipe"], pipe.rect)
             if pipe.rect.right < 0:
                 pipes.remove(pipe)
             if pipe.rect.right < bird_rect.left:
@@ -289,17 +293,26 @@ while True:
                     pipes.remove(pipe)
                 else:
                     running = False 
+        for laser in lasers:
+            laser.rect.x += settings["Speed"][0]
+            pygame.draw.rect(canvas, colors["Power"], laser.rect)
+            if laser.rect.x > w_canvas:
+                lasers.remove(laser)
+            for pipe in pipes:
+                if pygame.Rect.colliderect(pipe.rect,laser.rect):
+                    pipes.remove(pipe)
+                    lasers.remove(laser)
         for coin in coins:
-            pygame.draw.ellipse(canvas, coin.ccolour, coin.rect)
             coin.rect.x -= settings["Speed"][0]
+            pygame.draw.ellipse(canvas, coin.ccolour, coin.rect)
             if coin.rect.right < 0:
                 coins.remove(coin)
             if pygame.Rect.colliderect(coin.rect, bird_rect):
                 playercoin += 1
                 coins.remove(coin)
         for power in powers:
-            power.draw()
             power.rect.x -= settings["Speed"][0]
+            power.draw()
             if power.rect.right < 0:
                 powers.remove(power)
             if pygame.Rect.colliderect(power.rect, bird_rect):
@@ -318,13 +331,21 @@ while True:
                 else:
                     cosmetics[cosmetic][cosmetics[cosmetic][0]][0](canvas, colors[cosmetic],cosmetics[cosmetic][cosmetics[cosmetic][0]][1])
         if shield > 0:
-            pygame.draw.rect(canvas, colors["Power"], bird_rect, width=5)
             shield -= 1/settings["Fps"][0]
+            pygame.draw.rect(canvas, colors["Power"], bird_rect, width=5)
+            pygame.draw.rect(canvas, colors["Power"], (20,20,300,75), width=5)
+            pygame.draw.rect(canvas, colors["Power"], (20,20,shield/10*300 ,75))
         else:
             shield = 0
         if ammo:
             pygame.draw.rect(canvas, colors["Power"], (bird_rect.right-30/100*settings["Bird Size"][0],bird_rect.bottom-35/100*settings["Bird Size"][0],40/100*settings["Bird Size"][0],10/100*settings["Bird Size"][0]))
             pygame.draw.rect(canvas, colors["Power"], (bird_rect.right-25/100*settings["Bird Size"][0],bird_rect.bottom-25/100*settings["Bird Size"][0],10/100*settings["Bird Size"][0],15/100*settings["Bird Size"][0]))
+            for i in range(ammo):
+                pygame.draw.rect(canvas, colors["Power"], (20+i*50,50+bool(shield)*75,20,30))
+                pygame.draw.circle(canvas, colors["Power"], [30+i*50,50+bool(shield)*75],10)
+            if not len(lasers) and keys[pygame.K_v]:
+                lasers.append(Laser(bird_rect.right-30/100*settings["Bird Size"][0],bird_rect.bottom-40/100*settings["Bird Size"][0]))
+                ammo -= 1
         if keys[pygame.K_SPACE] or mouse:
             if can:
                 grav = 1
@@ -344,7 +365,7 @@ while True:
             pipes.append(Pipe(r1, 0))
             pipes.append(Pipe(h_canvas-settings["Floor Size"][0]-r1-r2, r1+r2))
             pipetimer = 0
-            r3 = randint(0,4)
+            r3 = 2
             if not r3:
                 coins.append(Coin(1,colors["Coin"],r1+r2/2-settings["Pipe Size"][0]/2))
             elif r3 == 2:
