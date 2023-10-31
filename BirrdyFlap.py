@@ -62,12 +62,23 @@ class Coin():
         self.rect = pygame.Rect(w_canvas,y,settings["Pipe Size"][0],settings["Pipe Size"][0])
         self.worth = worth
         self.ccolour = ccolour
+class Power():
+    def __init__(self,pwr):
+        self.rect = pygame.Rect(w_canvas,r1+r2/2-settings["Pipe Size"][0]/2,settings["Pipe Size"][0],settings["Pipe Size"][0])
+        self.pwr = pwr
+    def draw(self):
+        if self.pwr == "Shield":
+            pygame.draw.ellipse(canvas, colors["Power"], self.rect)
+        if self.pwr == "Ammo":
+            pygame.draw.rect(canvas, colors["Power"], self.rect, width=5)
+            pygame.draw.rect(canvas, colors["Power"], (self.rect.x+27.5/75*settings["Pipe Size"][0],self.rect.bottom-45/75*settings["Pipe Size"][0],20/75*settings["Pipe Size"][0],30/75*settings["Pipe Size"][0]))
+            pygame.draw.circle(canvas, colors["Power"], [self.rect.centerx,self.rect.bottom-45/75*settings["Pipe Size"][0]], (20/75*settings["Pipe Size"][0])/2)
 openui = True
 colour_select = False
 settings_select = False
 cosmetic_select = False
 colours = ["black","grey","white","brown","red","yellow","blue","orange","green","purple","blueviolet","magenta","pink","light green","dark green","dark blue","cornflowerblue","cyan", "dark cyan","aquamarine","coral","crimson","deepskyblue"]
-colors = {"Body":colours[randint(0,len(colours)-2)],"Beak":"orange","Eye":"black","Wing":"black","Text":"black","Pipe":"green","Sky":"deepskyblue","Grass":"lightgreen","End":"brown","Coin":"yellow"}
+colors = {"Body":colours[randint(0,len(colours)-2)],"Beak":"orange","Eye":"black","Wing":"black","Text":"black","Pipe":"green","Sky":"deepskyblue","Grass":"lightgreen","End":"brown","Coin":"yellow","Power":"cyan"}
 colour = "Body"
 for red in range(1,6):
     for green in range(1,6):
@@ -256,6 +267,9 @@ while True:
     pipetimer = 0
     pipes = []
     coins = []
+    powers = []
+    shield = 0
+    ammo = 0
     while running:
         window(True)
         Cosmetics(cosmetics["Body"][0],cosmetics["Beak"][0],cosmetics["Eye"][0],cosmetics["Wing"][0])
@@ -270,7 +284,11 @@ while True:
                     score += 0.5
                     pipe.cna = False
             if pygame.Rect.colliderect(pipe.rect, bird_rect):
-                running = False 
+                if shield:
+                    shield = 0
+                    pipes.remove(pipe)
+                else:
+                    running = False 
         for coin in coins:
             pygame.draw.ellipse(canvas, coin.ccolour, coin.rect)
             coin.rect.x -= settings["Speed"][0]
@@ -279,6 +297,17 @@ while True:
             if pygame.Rect.colliderect(coin.rect, bird_rect):
                 playercoin += 1
                 coins.remove(coin)
+        for power in powers:
+            power.draw()
+            power.rect.x -= settings["Speed"][0]
+            if power.rect.right < 0:
+                powers.remove(power)
+            if pygame.Rect.colliderect(power.rect, bird_rect):
+                if power.pwr == "Shield":
+                    shield = 10
+                if power.pwr == "Ammo":
+                    ammo += 1
+                powers.remove(power)
         if pygame.Rect.colliderect(grass, bird_rect):
             running = False 
         text(str(int(score)), w_canvas/2, 50, 200, colors["Text"], "jungleadventurer")
@@ -288,6 +317,14 @@ while True:
                     cosmetics[cosmetic][cosmetics[cosmetic][0]][0](canvas, colors[cosmetic],cosmetics[cosmetic][cosmetics[cosmetic][0]][1],cosmetics[cosmetic][cosmetics[cosmetic][0]][2],draw_top_left=cosmetics[cosmetic][cosmetics[cosmetic][0]][3],draw_top_right=cosmetics[cosmetic][cosmetics[cosmetic][0]][4],draw_bottom_left=cosmetics[cosmetic][cosmetics[cosmetic][0]][5],draw_bottom_right=cosmetics[cosmetic][cosmetics[cosmetic][0]][6])
                 else:
                     cosmetics[cosmetic][cosmetics[cosmetic][0]][0](canvas, colors[cosmetic],cosmetics[cosmetic][cosmetics[cosmetic][0]][1])
+        if shield > 0:
+            pygame.draw.rect(canvas, colors["Power"], bird_rect, width=5)
+            shield -= 1/settings["Fps"][0]
+        else:
+            shield = 0
+        if ammo:
+            pygame.draw.rect(canvas, colors["Power"], (bird_rect.right-30/100*settings["Bird Size"][0],bird_rect.bottom-35/100*settings["Bird Size"][0],40/100*settings["Bird Size"][0],10/100*settings["Bird Size"][0]))
+            pygame.draw.rect(canvas, colors["Power"], (bird_rect.right-25/100*settings["Bird Size"][0],bird_rect.bottom-25/100*settings["Bird Size"][0],10/100*settings["Bird Size"][0],15/100*settings["Bird Size"][0]))
         if keys[pygame.K_SPACE] or mouse:
             if can:
                 grav = 1
@@ -307,10 +344,16 @@ while True:
             pipes.append(Pipe(r1, 0))
             pipes.append(Pipe(h_canvas-settings["Floor Size"][0]-r1-r2, r1+r2))
             pipetimer = 0
-            r3 = randint(0,1)
+            r3 = randint(0,4)
             if not r3:
                 coins.append(Coin(1,colors["Coin"],r1+r2/2-settings["Pipe Size"][0]/2))
-        if pygame.mouse.get_pressed()[2]:
+            elif r3 == 2:
+                r3 = randint(0,1)
+                if r3 == 0:
+                    powers.append(Power("Shield"))
+                elif r3 == 1:
+                    powers.append(Power("Ammo"))      
+        if pygame.mouse.get_pressed()[2] or keys[pygame.K_b]:
             pausing = True
         while pausing:
             window(False)
