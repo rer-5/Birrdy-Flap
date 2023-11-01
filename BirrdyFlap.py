@@ -424,7 +424,7 @@ while True:
             for i in range(ammo):
                 pygame.draw.rect(canvas, colors["Power"], (20+i*50,50+bool(shield)*75,20,30))
                 pygame.draw.circle(canvas, colors["Power"], [30+i*50,50+bool(shield)*75],10)
-            if not len(lasers) and (keys[pygame.K_v] or keys[pygame.K_s]):
+            if not len(lasers) and (keys[pygame.K_v] or keys[pygame.K_s] or up_track):
                 lasers.append(Laser(bird_rect.right-30/100*settings["Bird Size"][0],bird_rect.bottom-40/100*settings["Bird Size"][0]))
                 ammo -= 1
         if nuke > 0:
@@ -435,8 +435,9 @@ while True:
             pygame.draw.polygon(canvas, "black", [(nuke_rect.centerx+(40/3**0.5), nuke_rect.centery-40),(nuke_rect.centerx-(40/3**0.5), nuke_rect.centery-40),nuke_rect.center])
             pygame.draw.polygon(canvas, "black", [(nuke_rect.centerx+(40/3**0.5), nuke_rect.centery+40),(nuke_rect.centerx+(80/3**0.5), nuke_rect.centery),nuke_rect.center])
             pygame.draw.polygon(canvas, "black", [(nuke_rect.centerx-(80/3**0.5), nuke_rect.centery),(nuke_rect.centerx-(40/3**0.5), nuke_rect.centery+40),nuke_rect.center])
-            pygame.draw.circle(canvas, colors["Power"], nuke_rect.center, 10, width=3)
-            if nuke >= 4 and (keys[pygame.K_c] or keys[pygame.K_d]):
+            pygame.draw.circle(canvas, colors["Sky"], nuke_rect.center, 10, width=3)
+            pygame.draw.circle(canvas, colors["Power"], nuke_rect.center, 10, width=3, draw_top_left=int(nuke/1), draw_top_right=int(nuke/2), draw_bottom_left=int(nuke/3), draw_bottom_right=int(nuke/4))
+            if nuke >= 4 and (keys[pygame.K_c] or keys[pygame.K_d] or down_track):
                 nuke = -20
         if nuke < 0:
             pygame.draw.circle(canvas, "orange", canvas_rect.center, 100*(10+nuke))
