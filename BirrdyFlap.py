@@ -162,7 +162,7 @@ while True:
                 upgrade_select = True
                 page_scroll = 0
                 upgrading = False
-        if keys[pygame.K_SPACE]:
+        if keys[pygame.K_SPACE] or keys[pygame.K_w]:
             openui = False
         while colour_select:
             window(True)
@@ -424,7 +424,7 @@ while True:
             for i in range(ammo):
                 pygame.draw.rect(canvas, colors["Power"], (20+i*50,50+bool(shield)*75,20,30))
                 pygame.draw.circle(canvas, colors["Power"], [30+i*50,50+bool(shield)*75],10)
-            if not len(lasers) and keys[pygame.K_v]:
+            if not len(lasers) and (keys[pygame.K_v] or keys[pygame.K_s]):
                 lasers.append(Laser(bird_rect.right-30/100*settings["Bird Size"][0],bird_rect.bottom-40/100*settings["Bird Size"][0]))
                 ammo -= 1
         if nuke > 0:
@@ -436,7 +436,7 @@ while True:
             pygame.draw.polygon(canvas, "black", [(nuke_rect.centerx+(40/3**0.5), nuke_rect.centery+40),(nuke_rect.centerx+(80/3**0.5), nuke_rect.centery),nuke_rect.center])
             pygame.draw.polygon(canvas, "black", [(nuke_rect.centerx-(80/3**0.5), nuke_rect.centery),(nuke_rect.centerx-(40/3**0.5), nuke_rect.centery+40),nuke_rect.center])
             pygame.draw.circle(canvas, colors["Power"], nuke_rect.center, 10, width=3)
-            if nuke >= 4 and keys[pygame.K_c]:
+            if nuke >= 4 and (keys[pygame.K_c] or keys[pygame.K_d]):
                 nuke = -20
         if nuke < 0:
             pygame.draw.circle(canvas, "orange", canvas_rect.center, 100*(10+nuke))
@@ -449,7 +449,7 @@ while True:
             powers = []
             lasers = []
             pipetimer = 0
-        if keys[pygame.K_SPACE] or mouse:
+        if keys[pygame.K_SPACE] or keys[pygame.K_w] or mouse:
             if can:
                 grav = 1
                 jt = settings["Jump"][0]
@@ -479,12 +479,12 @@ while True:
                     powers.append(Power("Ammo")) 
                 elif r3 == 2:
                     powers.append(Power("Nuke"))  
-        if pygame.mouse.get_pressed()[2] or keys[pygame.K_COMMA]:
+        if pygame.mouse.get_pressed()[2] or keys[pygame.K_q] or keys[pygame.K_COMMA]:
             pausing = True
         while pausing:
             window(False)
             pausing = back_button()
-            if mouse or keys[pygame.K_SPACE]:
+            if mouse or keys[pygame.K_w] or keys[pygame.K_SPACE]:
                 pausing = False
             pygame.draw.rect(canvas, "black", (w_canvas/3+50,h_canvas/2-300,100,600))
             pygame.draw.rect(canvas, "black", (w_canvas/3*2-150,h_canvas/2-300,100,600))
