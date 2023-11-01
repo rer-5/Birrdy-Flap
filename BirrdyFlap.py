@@ -48,7 +48,7 @@ def lock(rect):
     pygame.draw.circle(canvas, "black", rect.center, 3)
 def setset(min,max):
     sum = max - min
-    if mouse and pygame.Rect(w_canvas/2 -300, 300+150*setcount-colour_size, 600, 100).collidepoint(mousepos):
+    if mouse and pygame.Rect(w_canvas/2 -300, 300+150*setcount-page_scroll, 600, 100).collidepoint(mousepos):
         num = int(((mousepos[0]-((w_canvas - 600)/2))/(600/(sum+1)))) + min
         return num
     else:
@@ -73,6 +73,14 @@ class Power():
             pygame.draw.rect(canvas, colors["Power"], self.rect, width=5)
             pygame.draw.rect(canvas, colors["Power"], (self.rect.x+27.5/75*settings["Pipe Size"][0],self.rect.bottom-45/75*settings["Pipe Size"][0],20/75*settings["Pipe Size"][0],30/75*settings["Pipe Size"][0]))
             pygame.draw.circle(canvas, colors["Power"], [self.rect.centerx,self.rect.bottom-45/75*settings["Pipe Size"][0]], (20/75*settings["Pipe Size"][0])/2)
+        if self.pwr == "Nuke":
+            pygame.draw.ellipse(canvas, colors["Power"], self.rect)
+            pygame.draw.ellipse(canvas, "black", self.rect, width=5)
+            pygame.draw.circle(canvas, "black", self.rect.center, settings["Pipe Size"][0]/7.5)
+            pygame.draw.polygon(canvas, "black", [(self.rect.centerx+(40/3**0.5)/100*settings["Pipe Size"][0], self.rect.centery-40/100*settings["Pipe Size"][0]),(self.rect.centerx-(40/3**0.5)/100*settings["Pipe Size"][0], self.rect.centery-40/100*settings["Pipe Size"][0]),self.rect.center])
+            pygame.draw.polygon(canvas, "black", [(self.rect.centerx+(40/3**0.5)/100*settings["Pipe Size"][0], self.rect.centery+40/100*settings["Pipe Size"][0]),(self.rect.centerx+(80/3**0.5)/100*settings["Pipe Size"][0], self.rect.centery),self.rect.center])
+            pygame.draw.polygon(canvas, "black", [(self.rect.centerx-(80/3**0.5)/100*settings["Pipe Size"][0], self.rect.centery),(self.rect.centerx-(40/3**0.5)/100*settings["Pipe Size"][0], self.rect.centery+40/100*settings["Pipe Size"][0]),self.rect.center])
+            pygame.draw.circle(canvas, colors["Power"], self.rect.center, settings["Pipe Size"][0]/7.5, width=3)
 class Laser():
     def __init__(self,x,y):
         self.rect = pygame.Rect(x,y,20/100*settings["Bird Size"][0],7.5/100*settings["Bird Size"][0])
@@ -140,24 +148,24 @@ while True:
                 openui = False
             if colour_rect.collidepoint(mousepos):
                 colour_select = True
-                colour_size = 0
+                page_scroll = 0
             if settings_rect.collidepoint(mousepos):
                 settings_select = True
-                colour_size = 0
+                page_scroll = 0
             if cosmetic_rect.collidepoint(mousepos):
                 cosmetic_select = True
-                colour_size = 0
+                page_scroll = 0
                 bird_size = 100
             if upgrade_rect.collidepoint(mousepos):
                 upgrade_select = True
-                colour_size = 0
+                page_scroll = 0
         if keys[pygame.K_SPACE]:
             openui = False
         while colour_select:
             window(True)
             setcount = 0
             for color in colors:
-                color_rect = pygame.Rect(50,250+150*setcount-(colour_size),100,100)
+                color_rect = pygame.Rect(50,250+150*setcount-(page_scroll),100,100)
                 pygame.draw.rect(canvas, colors[color], color_rect)
                 if colors[color] == "black":
                     text(str(color),color_rect.x+50,color_rect.y+37.5,50,"white","jungleadventurer")
@@ -170,23 +178,23 @@ while True:
                         colour = color
                 setcount += 1
             for clour in colours:
-                clour_rect = pygame.Rect(w_canvas/5*(((colours.index(clour))%4)+1)-50,250+150*int(colours.index(clour)/4)-(colour_size),100,100)
+                clour_rect = pygame.Rect(w_canvas/5*(((colours.index(clour))%4)+1)-50,250+150*int(colours.index(clour)/4)-(page_scroll),100,100)
                 pygame.draw.rect(canvas, clour, clour_rect)
                 if clour == colors[colour]:
                     pygame.draw.rect(canvas, "green", clour_rect, width=5)
                 if mouse:
                     if clour_rect.collidepoint(mousepos):
                         colors[colour] = clour
-            if colour_size < 300+150*int(colours.index(clour)/4)-h_canvas/5*4:
+            if page_scroll < 300+150*int(colours.index(clour)/4)-h_canvas/5*4:
                 if keys[pygame.K_DOWN]:
-                    colour_size += 10
+                    page_scroll += 10
                 if keys[pygame.K_RIGHT] or up_track:
-                    colour_size += 100
-            if colour_size > 0:
+                    page_scroll += 100
+            if page_scroll > 0:
                 if keys[pygame.K_UP]:
-                    colour_size -= 10
+                    page_scroll -= 10
                 if keys[pygame.K_LEFT] or down_track:
-                    colour_size -= 100
+                    page_scroll -= 100
             text("Colour Select", w_canvas/2, 50, 200, colors["Text"], "jungleadventurer")
             colour_select = back_button()
             pygame.display.update()
@@ -196,12 +204,12 @@ while True:
             canvas.fill("grey")
             setcount = 0
             for setting in settings:
-                pygame.draw.rect(canvas, "black", (w_canvas/4 -300, 300+150*setcount-(colour_size), 300, 100),width=5)
-                pygame.draw.rect(canvas, "black", (w_canvas-300, 300+150*setcount-(colour_size), 200, 100),width=5)
-                text(str(setting), w_canvas/4 -150, 300+150*setcount+25-(colour_size), 75, "black", "jungleadventurer")
-                text(str(settings[setting][0]), w_canvas-200, 300+150*setcount+25-(colour_size), 75, "black", "jungleadventurer")
-                pygame.draw.rect(canvas, "black", pygame.Rect(w_canvas/2 -300, 300+150*setcount-(colour_size), 600, 100),width=5)
-                pygame.draw.rect(canvas, "black", pygame.Rect((settings[setting][0] - settings[setting][1])*(600/(settings[setting][2]-settings[setting][1]+1))+425, 287.25+150*setcount-(colour_size), 50, 125))
+                pygame.draw.rect(canvas, "black", (w_canvas/4 -300, 300+150*setcount-(page_scroll), 300, 100),width=5)
+                pygame.draw.rect(canvas, "black", (w_canvas-300, 300+150*setcount-(page_scroll), 200, 100),width=5)
+                text(str(setting), w_canvas/4 -150, 300+150*setcount+25-(page_scroll), 75, "black", "jungleadventurer")
+                text(str(settings[setting][0]), w_canvas-200, 300+150*setcount+25-(page_scroll), 75, "black", "jungleadventurer")
+                pygame.draw.rect(canvas, "black", pygame.Rect(w_canvas/2 -300, 300+150*setcount-(page_scroll), 600, 100),width=5)
+                pygame.draw.rect(canvas, "black", pygame.Rect((settings[setting][0] - settings[setting][1])*(600/(settings[setting][2]-settings[setting][1]+1))+425, 287.25+150*setcount-(page_scroll), 50, 125))
                 settings[setting][0] = setset(settings[setting][1],settings[setting][2])
                 setcount += 1
             text("Settings", w_canvas/2, 50, 200, "black", "jungleadventurer")
@@ -211,22 +219,22 @@ while True:
             if pygame.Rect(w_canvas-350,50,300,100).collidepoint(mousepos):
                 if mouse:
                     settings = {"Speed":[5,1,25], "Gravity":[100,1,500], "Jump":[7,1,12], "Pipe Size":[75,1,200], "Bird Size":[100,10,200],"Floor Size":[100,10,500],"Fps":[60,10,60]}
-            if colour_size < 300+150*int(setcount)-h_canvas/5*4:
+            if page_scroll < 300+150*int(setcount)-h_canvas/5*4:
                 if keys[pygame.K_DOWN] or up_track:
-                    colour_size += 50
-            if colour_size > 0:
+                    page_scroll += 50
+            if page_scroll > 0:
                 if keys[pygame.K_UP] or down_track:
-                    colour_size -= 50
+                    page_scroll -= 50
             pygame.display.update()
             clock.tick(60)
         while cosmetic_select:
             window(colors["Sky"])
             setcount = 0
             for cosmetic in cosmetics:
-                text(str(cosmetic),100,287.5+150*int(setcount/4)-(colour_size),50,colors["Text"],"jungleadventurer")
+                text(str(cosmetic),100,287.5+150*int(setcount/4)-(page_scroll),50,colors["Text"],"jungleadventurer")
                 count = 0
                 for cos in cosmetics[cosmetic]:
-                    bird_rect = pygame.Rect(w_canvas/5*((setcount%4)+1)-50,250+150*int(setcount/4)-(colour_size),100,100)
+                    bird_rect = pygame.Rect(w_canvas/5*((setcount%4)+1)-50,250+150*int(setcount/4)-(page_scroll),100,100)
                     Cosmetics(cosmetics["Body"][0],cosmetics["Beak"][0],cosmetics["Eye"][0],cosmetics["Wing"][0])
                     if count:
                         if count == 1:
@@ -247,23 +255,29 @@ while True:
                     count += 1
                 if setcount%4:
                     setcount = setcount - setcount%4 + 4
-            if colour_size < 300+150*int(setcount/4)-h_canvas/5*4:
+            if page_scroll < 300+150*int(setcount/4)-h_canvas/5*4:
                 if keys[pygame.K_DOWN]:
-                    colour_size += 10
+                    page_scroll += 10
                 if keys[pygame.K_RIGHT] or up_track:
-                    colour_size += 100
-            if colour_size > 0:
+                    page_scroll += 100
+            if page_scroll > 0:
                 if keys[pygame.K_UP]:
-                    colour_size -= 10
+                    page_scroll -= 10
                 if keys[pygame.K_LEFT] or down_track:
-                    colour_size -= 100
+                    page_scroll -= 100
             text("Cosmetic Select", w_canvas/2, 50, 200, colors["Text"], "jungleadventurer")
             cosmetic_select = back_button()
             pygame.display.update()
             clock.tick(60)
         while upgrade_select:
             window(colors["Sky"])
-
+            setcount = 0
+            if page_scroll < 300+150*int(setcount)-h_canvas/5*4:
+                if keys[pygame.K_DOWN] or up_track:
+                    page_scroll += 50
+            if page_scroll > 0:
+                if keys[pygame.K_UP] or down_track:
+                    page_scroll -= 50
             text("Upgrades", w_canvas/2, 50, 200, colors["Text"], "jungleadventurer")
             upgrade_select = back_button()
             pygame.display.update()
@@ -288,6 +302,7 @@ while True:
     lasers = []
     shield = 0
     ammo = 0
+    nuke = 0
     while running:
         window(True)
         Cosmetics(cosmetics["Body"][0],cosmetics["Beak"][0],cosmetics["Eye"][0],cosmetics["Wing"][0])
@@ -308,7 +323,7 @@ while True:
                 else:
                     running = False 
         for laser in lasers:
-            laser.rect.x += settings["Speed"][0]
+            laser.rect.x += settings["Speed"][0]*2
             pygame.draw.rect(canvas, colors["Power"], laser.rect)
             if laser.rect.x > w_canvas:
                 lasers.remove(laser)
@@ -334,6 +349,8 @@ while True:
                     shield = 10
                 if power.pwr == "Ammo":
                     ammo += 1
+                if power.pwr == "Nuke":
+                    nuke += 1
                 powers.remove(power)
         if pygame.Rect.colliderect(grass, bird_rect):
             running = False 
@@ -360,6 +377,28 @@ while True:
             if not len(lasers) and keys[pygame.K_v]:
                 lasers.append(Laser(bird_rect.right-30/100*settings["Bird Size"][0],bird_rect.bottom-40/100*settings["Bird Size"][0]))
                 ammo -= 1
+        if nuke > 0:
+            nuke_rect = pygame.Rect(w_canvas-100,0,100,100)
+            pygame.draw.circle(canvas, colors["Power"], (w_canvas-50,50), 50, draw_top_left=int(nuke/1), draw_top_right=int(nuke/2), draw_bottom_left=int(nuke/3), draw_bottom_right=int(nuke/4))
+            pygame.draw.ellipse(canvas, "black", nuke_rect, width=5)
+            pygame.draw.circle(canvas, "black", nuke_rect.center, 10)
+            pygame.draw.polygon(canvas, "black", [(nuke_rect.centerx+(40/3**0.5), nuke_rect.centery-40),(nuke_rect.centerx-(40/3**0.5), nuke_rect.centery-40),nuke_rect.center])
+            pygame.draw.polygon(canvas, "black", [(nuke_rect.centerx+(40/3**0.5), nuke_rect.centery+40),(nuke_rect.centerx+(80/3**0.5), nuke_rect.centery),nuke_rect.center])
+            pygame.draw.polygon(canvas, "black", [(nuke_rect.centerx-(80/3**0.5), nuke_rect.centery),(nuke_rect.centerx-(40/3**0.5), nuke_rect.centery+40),nuke_rect.center])
+            pygame.draw.circle(canvas, colors["Power"], nuke_rect.center, 10, width=3)
+            if nuke >= 4 and keys[pygame.K_c]:
+                nuke = -20
+        if nuke < 0:
+            pygame.draw.circle(canvas, "orange", canvas_rect.center, 100*(10+nuke))
+            pygame.draw.circle(canvas, "yellow", canvas_rect.center, 75*(10+nuke))
+            pygame.draw.circle(canvas, "white", canvas_rect.center, 50*(10+nuke))
+            nuke += 1
+        if nuke == -10:
+            pipes = []
+            coins = []
+            powers = []
+            lasers = []
+            pipetimer = 0
         if keys[pygame.K_SPACE] or mouse:
             if can:
                 grav = 1
@@ -383,12 +422,14 @@ while True:
             if not r3:
                 coins.append(Coin(1,colors["Coin"],r1+r2/2-settings["Pipe Size"][0]/2))
             elif r3 == 1:
-                r3 = randint(0,1)
+                r3 = randint(0,2)
                 if r3 == 0:
                     powers.append(Power("Shield"))
                 elif r3 == 1:
-                    powers.append(Power("Ammo"))      
-        if pygame.mouse.get_pressed()[2] or keys[pygame.K_b]:
+                    powers.append(Power("Ammo")) 
+                elif r3 == 2:
+                    powers.append(Power("Nuke"))  
+        if pygame.mouse.get_pressed()[2] or keys[pygame.K_COMMA]:
             pausing = True
         while pausing:
             window(False)
