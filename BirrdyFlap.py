@@ -26,6 +26,7 @@ def window(background):
                 down_track = True
             if event.button == 5:
                 up_track = True
+    wsf()
 def text(text, x, y, si, col, font):
     font = pygame.font.SysFont(font,si)
     texting = font.render(text, True, col)
@@ -115,12 +116,13 @@ while importing:
         importing = False
     except ModuleNotFoundError:
         with open('BirrdyFlap_savefile.py', 'w') as sf:
-            sf.write(f'bestscore = 0\nplayercoin = 0')
+            sf.write(f'bestscore = 0\nplayercoin = 0\nstarting_shield = 0\nstarting_ammo = 0\nstarting_nuke = 0')
 def wsf():
     with open('BirrdyFlap_savefile.py', 'w') as sf:
-        sf.write(f'bestscore = {int(bestscore)}\nplayercoin = {playercoin}')
+        sf.write(f'bestscore = {int(bestscore)}\nplayercoin = {playercoin}\nstarting_shield = {upgrades["Shield"][1]}\nstarting_ammo = {upgrades["Ammo"][1]}\nstarting_nuke = {upgrades["Nuke"][1]}')
 bestscore = int(bf.bestscore)
 playercoin = int(bf.playercoin)
+upgrades = {"Shield":[5,bf.starting_shield,"Gives the shield power up on start"],"Ammo":[5,bf.starting_ammo,"Gives the ammo power up on start"],"Nuke":[5,bf.starting_nuke,"Gives the nuke power up on start"]}
 while True:
     while openui:
         window(True)
@@ -159,6 +161,7 @@ while True:
             if upgrade_rect.collidepoint(mousepos):
                 upgrade_select = True
                 page_scroll = 0
+                upgrading = False
         if keys[pygame.K_SPACE]:
             openui = False
         while colour_select:
@@ -272,13 +275,48 @@ while True:
         while upgrade_select:
             window(colors["Sky"])
             setcount = 0
+            for upgrade in upgrades:
+                setcount +=1
+                upgrade_rect = pygame.Rect(w_canvas/5*(setcount%4)-50,250+150*int(setcount/4)-(page_scroll),200,100)
+                pygame.draw.rect(canvas, colors["Text"], upgrade_rect, width=5)
+                text(upgrade, upgrade_rect.centerx, 250+150*int(setcount/4)-(page_scroll)+37.5, 50, colors["Text"], "jungleadventurer")
+                if playercoin >= upgrades[upgrade][0]:
+                    if pygame.Rect(upgrade_rect).collidepoint(mousepos):
+                        if mouse:
+                            upgrading = True
+                else:
+                    lock(upgrade_rect)
+                while upgrading:
+                    window(False)
+                    text("Bird Shop", w_canvas/2, 50, 200, colors["Text"], "jungleadventurer")
+                    pygame.draw.rect(canvas, colors["End"], (w_canvas/2 -300, h_canvas/2 -250, 600, 500))
+                    text(upgrade, canvas_rect.centerx, h_canvas/2 -240, 100, colors["Text"], "jungleadventurer")
+                    text(upgrades[upgrade][2], canvas_rect.centerx, h_canvas/2 -150, 50, colors["Text"], "jungleadventurer")
+                    text(f"Price: {upgrades[upgrade][0]} coins", canvas_rect.centerx, h_canvas/2 -90, 75, colors["Text"], "jungleadventurer")
+                    text(f"You have {playercoin} coins", canvas_rect.centerx, h_canvas/2 -20, 75, colors["Text"], "jungleadventurer")
+                    text(f"You own {upgrades[upgrade][1]} of this item", canvas_rect.centerx, h_canvas/2 +50, 75, colors["Text"], "jungleadventurer")
+                    if pygame.Rect(pygame.Rect(w_canvas/2-200,h_canvas/2 +150,400,75)).collidepoint(mousepos):
+                        pygame.draw.rect(canvas, "white", pygame.Rect(w_canvas/2-200,h_canvas/2 +150,400,75))
+                        text(f"CONFIRM PURCHASE", canvas_rect.centerx, h_canvas/2 +175, 50, "black", "jungleadventurer")
+                        if mouse:
+                            upgrades[upgrade][1] += 1
+                            playercoin -= upgrades[upgrade][0]
+                            upgrading = False
+                    else:
+                        pygame.draw.rect(canvas, "black", pygame.Rect(w_canvas/2-200,h_canvas/2 +150,400,75))
+                        text(f"CONFIRM PURCHASE", canvas_rect.centerx, h_canvas/2 +175, 50, "white", "jungleadventurer")
+                    if not pygame.Rect(w_canvas/2 -300, h_canvas/2 -250, 600, 500).collidepoint(mousepos):
+                        if mouse:
+                            upgrading = False
+                    pygame.display.update()
+                    clock.tick(60)
             if page_scroll < 300+150*int(setcount)-h_canvas/5*4:
                 if keys[pygame.K_DOWN] or up_track:
                     page_scroll += 50
             if page_scroll > 0:
                 if keys[pygame.K_UP] or down_track:
                     page_scroll -= 50
-            text("Upgrades", w_canvas/2, 50, 200, colors["Text"], "jungleadventurer")
+            text("Bird Shop", w_canvas/2, 50, 200, colors["Text"], "jungleadventurer")
             upgrade_select = back_button()
             pygame.display.update()
             clock.tick(60)
@@ -300,9 +338,21 @@ while True:
     coins = []
     powers = []
     lasers = []
-    shield = 0
-    ammo = 0
-    nuke = 0
+    if upgrades["Shield"][1]:
+        upgrades["Shield"][1] -= 1
+        shield = 10
+    else:
+        shield = 0
+    if upgrades["Ammo"][1]:
+        upgrades["Ammo"][1] -= 1
+        ammo = 2
+    else:
+        ammo = 0
+    if upgrades["Nuke"][1]:
+        upgrades["Nuke"][1] -= 1
+        nuke = 4
+    else:
+        nuke = 0
     while running:
         window(True)
         Cosmetics(cosmetics["Body"][0],cosmetics["Beak"][0],cosmetics["Eye"][0],cosmetics["Wing"][0])
@@ -446,7 +496,6 @@ while True:
     gamecard = True
     if score > bestscore:
         bestscore = score
-    wsf()
     while gamecard:
         window(False)
         pygame.draw.rect(canvas, colors["End"], (w_canvas/2 -300, h_canvas/2 -250, 600, 600))
