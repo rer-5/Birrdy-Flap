@@ -1,5 +1,6 @@
 import pygame
 from random import randint
+from datetime import datetime
 pygame.init()
 canvas = pygame.display.set_mode((0, 0), pygame.FULLSCREEN) 
 canvas_rect = canvas.get_rect()
@@ -91,7 +92,7 @@ settings_select = False
 cosmetic_select = False
 upgrade_select = False
 colours = ["black","grey","white","brown","red","yellow","blue","orange","green","purple","blueviolet","magenta","pink","light green","dark green","dark blue","cornflowerblue","cyan", "dark cyan","aquamarine","coral","crimson","deepskyblue"]
-colors = {"Body":colours[randint(0,len(colours)-2)],"Beak":"orange","Eye":"black","Wing":"black","Text":"black","Pipe":"green","Sky":"deepskyblue","Grass":"lightgreen","End":"brown","Coin":"yellow","Power":"cyan"}
+colors = {"Body":colours[randint(0,len(colours)-2)],"Beak":"orange","Eye":"black","Wing":"black","Text":"black","Pipe":"green","Sky":"deepskyblue","Grass":"lightgreen","End":"brown","Coin":"yellow","Power":"purple"}
 colour = "Body"
 for red in range(1,6):
     for green in range(1,6):
@@ -128,6 +129,9 @@ while True:
         window(True)
         text("Birrdy Flap", w_canvas/2 -10, 60, 300, "black", "jungleadventurer")
         text("Birrdy Flap", w_canvas/2, 50, 300, "white", "jungleadventurer")
+        now = datetime.now()
+        text(now.strftime("%d/%m/%Y"), w_canvas-100, 12.5, 50, colors["Text"], "jungleadventurer")
+        text(now.strftime("%H:%M:%S"), w_canvas-100, 50, 50, colors["Text"], "jungleadventurer")
         play_rect = pygame.Rect(w_canvas/2 -125, h_canvas/2 - 125, 250, 250)
         pygame.draw.rect(canvas, colors["Grass"], (0,h_canvas-100,w_canvas,100))
         pygame.draw.polygon(canvas, "black",[(w_canvas/2 + 100,h_canvas/2),(w_canvas/2 - 100, h_canvas/2 - 100),(w_canvas/2 - 100, h_canvas/2 + 100)])
