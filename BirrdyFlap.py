@@ -55,6 +55,12 @@ def setset(min,max):
         return num
     else:
         return settings[setting][0]
+class Cloud:
+    def __init__(self):
+        self.rect = pygame.Rect(w_canvas,randint(0,h_canvas/2),200,100)
+    def draw(self):
+            pygame.draw.ellipse(canvas, colors["Cloud"], (self.rect.x, self.rect.y, 200,100))
+            pygame.draw.ellipse(canvas, colors["Cloud"], (self.rect.x+randint(-10,10)*10, self.rect.y+randint(-10,10)*5, randint(100,200),randint(50,100)))
 class Pipe():
     def __init__(self, h, y):
         self.rect = pygame.Rect(w_canvas, y, settings["Pipe Size"][0], h)
@@ -92,13 +98,13 @@ settings_select = False
 cosmetic_select = False
 upgrade_select = False
 colours = ["black","grey","white","brown","red","yellow","blue","orange","green","purple","blueviolet","magenta","pink","light green","dark green","dark blue","cornflowerblue","cyan", "dark cyan","aquamarine","coral","crimson","deepskyblue"]
-colors = {"Body":colours[randint(0,len(colours)-2)],"Beak":"orange","Eye":"black","Wing":"black","Text":"black","Pipe":"green","Sky":"deepskyblue","Grass":"lightgreen","End":"brown","Coin":"yellow","Power":"purple"}
+colors = {"Body":colours[randint(0,len(colours)-2)],"Beak":"orange","Eye":"black","Wing":"black","Text":"black","Pipe":"green","Sky":"deepskyblue","Grass":"lightgreen","End":"brown","Coin":"yellow","Power":"purple","Dark":"black","Cloud":"white"}
 colour = "Body"
 for red in range(1,6):
     for green in range(1,6):
         for blue in range(1,6):
             colours.append((red*50,green*50,blue*50))
-settings = {"Speed":[5,1,25], "Gravity":[100,1,500], "Jump":[7,1,12], "Pipe Size":[75,1,200], "Bird Size":[100,10,200],"Floor Size":[100,10,500],"Fps":[60,10,60]}
+settings = {"Speed":[5,1,25], "Gravity":[100,1,500], "Jump":[7,1,12], "Pipe Size":[75,1,200], "Bird Size":[100,10,200],"Floor Size":[100,10,500],"Fps":[60,10,60],"Dark Mode":[0,0,1]}
 bird_rect = pygame.Rect(0,0,0,0)
 bird_size = 100
 def Cosmetics(one,two,three,four):
@@ -338,6 +344,7 @@ while True:
     score = 0
     grass = pygame.Rect(0, h_canvas-settings["Floor Size"][0], w_canvas, settings["Floor Size"][0])
     pipetimer = 0
+    clouds = []
     pipes = []
     coins = []
     powers = []
@@ -361,6 +368,13 @@ while True:
         window(True)
         Cosmetics(cosmetics["Body"][0],cosmetics["Beak"][0],cosmetics["Eye"][0],cosmetics["Wing"][0])
         pygame.draw.rect(canvas, colors["Grass"], grass)
+        if not randint(0,600):
+            clouds.append(Cloud())
+        for cloud in clouds:
+            cloud.rect.x -= settings["Speed"][0]/2
+            cloud.draw()
+            if cloud.rect.right < 0:
+                clouds.remove(cloud)
         for pipe in pipes:
             pipe.rect.x -= settings["Speed"][0]
             pygame.draw.rect(canvas, colors["Pipe"], pipe.rect)
@@ -409,6 +423,14 @@ while True:
         if pygame.Rect.colliderect(grass, bird_rect):
             running = False 
         text(str(int(score)), w_canvas/2, 50, 200, colors["Text"], "jungleadventurer")
+        if settings["Dark Mode"][0]:
+            light_rect = pygame.Rect(bird_rect.centerx-settings["Bird Size"][0]*2, bird_rect.centery-settings["Bird Size"][0]*2, settings["Bird Size"][0]*4, settings["Bird Size"][0]*4)
+            for w in range(int(w_canvas/2/10)):
+                for h in range(int(h_canvas/10)):
+                    dark_rect = pygame.Rect(w*10,h*10,10,10)
+                    if not pygame.Rect.colliderect(light_rect,dark_rect):
+                        pygame.draw.rect(canvas, colors["Dark"], dark_rect)
+            pygame.draw.rect(canvas, colors["Dark"], (w_canvas/2-10,0,w_canvas/2+10,h_canvas))
         for cosmetic in cosmetics:
             if cosmetics[cosmetic][cosmetics[cosmetic][0]]:
                 if len(cosmetics[cosmetic][cosmetics[cosmetic][0]]) == 7:
